@@ -1,21 +1,27 @@
 package hr.absencemindedness.enums;
 
+import hr.absencemindedness.constants.AppColors;
+
 import java.awt.*;
 
 public enum DayStatus {
-    NONE, USED, APPROVED, PLANED, NON_WORKING, PATERNITY, FREE_DAY_BLOOD, HOME_OFFICE;
+    NONE(AppColors.WHITE),
+    USED(AppColors.STATUS_USED),
+    APPROVED(AppColors.STATUS_APPROVED),
+    PLANED(AppColors.STATUS_PLANED),
+    NON_WORKING(AppColors.STATUS_NON_WORKING),
+    PATERNITY(AppColors.STATUS_PATERNITY),
+    FREE_DAY_BLOOD(AppColors.STATUS_FREE_DAY_BLOOD),
+    HOME_OFFICE(AppColors.STATUS_HOME_OFFICE);
+
+    private final Color color;
+
+    DayStatus(Color color){
+        this.color = color;
+    }
 
     public Color getColor(){
-        return switch (this){
-            case USED -> new Color(200,50,50);
-            case APPROVED -> new Color(80,160,80);
-            case PLANED -> new Color(100,160,220);
-            case NON_WORKING -> new Color(200,200,200);
-            case PATERNITY -> new Color(255, 0,255);
-            case FREE_DAY_BLOOD -> new Color(255,255,0);
-            case HOME_OFFICE -> new Color(255,175,175);
-            case NONE -> Color.WHITE;
-        };
+       return color;
     }
 
     public String getLabel(){

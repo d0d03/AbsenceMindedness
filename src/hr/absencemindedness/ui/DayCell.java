@@ -1,5 +1,6 @@
 package hr.absencemindedness.ui;
 
+import hr.absencemindedness.constants.AppColors;
 import hr.absencemindedness.enums.DayStatus;
 
 import javax.swing.*;
@@ -56,7 +57,7 @@ public class DayCell  extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         DayStatus status  = getStatus();
-        Color base = status == DayStatus.NONE ? new Color(252, 252, 255) : status.getColor();
+        Color base = status == DayStatus.NONE ? AppColors.WHITE : status.getColor();
 
         //Fill
         g2.setColor(hovered ? base.darker() : base);
@@ -64,10 +65,10 @@ public class DayCell  extends JPanel {
 
         //Border
         if(hovered){
-            g2.setColor(new Color(50,60,80));
+            g2.setColor(AppColors.GRID_FG);
             g2.setStroke(new BasicStroke(1.5f));
         } else {
-            g2.setColor(new Color(200,200,210));
+            g2.setColor(AppColors.FOOTER_BRD);
             g2.setStroke(new BasicStroke(1f));
         }
         g2.drawRect(0,0,getWidth() - 1, getHeight() - 1);
