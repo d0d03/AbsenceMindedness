@@ -3,12 +3,15 @@ package hr.absencemindedness.ui;
 import hr.absencemindedness.constants.AppColors;
 import hr.absencemindedness.constants.AppFonts;
 import hr.absencemindedness.enums.DayStatus;
+import hr.absencemindedness.models.CalendarKey;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.HashMap;
@@ -17,24 +20,21 @@ import java.util.Map;
 
 public class CalendarFrame extends JFrame {
 
-    private static final String MAIN_TITLE = "AbsenceMindedness 2026";
-    private static final int[] DAYS_IN_MONTH = {31,28,31,30,31,30,31,31,30,31,30,31};
+    private static final String MAIN_TITLE = "AbsenceMindedness";
     private static final String LOCALE = null;
 
     private final JPanel gridPanel = new JPanel();
-    private final DayCell[][] cells = new DayCell[12][31];
-    private final Map<Integer, Map<Integer, DayStatus>> calendarData = new HashMap<>();
+    private final Map<CalendarKey, DayStatus> calendarData = new HashMap<>();
 
     private DayStatus selectedStatus = DayStatus.PLANED;
     private JLabel statusLabel;
+    private int currentYear = LocalDate.now().getYear();
 
     public CalendarFrame(){
         super(MAIN_TITLE);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout(0,0));
         getContentPane().setBackground(AppColors.GRID_BG);
-
-        for(int m = 0; m<12; m++) calendarData.put(m, new HashMap<>());
 
         add(buildHeader(), BorderLayout.NORTH);
         add(buildGrid(), BorderLayout.CENTER);
@@ -50,8 +50,12 @@ public class CalendarFrame extends JFrame {
         return this.selectedStatus;
     }
 
-    protected Map<Integer, Map<Integer, DayStatus>> getCalendarData(){
+    protected Map<CalendarKey, DayStatus> getCalendarData(){
         return this.calendarData;
+    }
+
+    protected int getCurrentYear(){
+       return currentYear;
     }
 
     private JPanel buildHeader(){
@@ -59,17 +63,34 @@ public class CalendarFrame extends JFrame {
         header.setBackground(AppColors.HEADER_BG);
         header.setBorder(new EmptyBorder(12,18,12,18));
 
-        JLabel title = new JLabel(MAIN_TITLE);
-        title.setFont(AppFonts.TITLE);
-        title.setForeground(Color.WHITE);
+        JPanel titlePanel = buildTitlePanel();
 
         statusLabel = new JLabel("Active tool: " + selectedStatus.getLabel());
         statusLabel.setFont(AppFonts.BODY);
         statusLabel.setForeground(AppColors.HEADER_FG);
 
-        header.add(title, BorderLayout.WEST);
+        header.add(titlePanel, BorderLayout.WEST);
         header.add(statusLabel, BorderLayout.EAST);
         return header;
+    }
+
+    private JPanel buildTitlePanel() {
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,0));
+        titlePanel.setOpaque(false);
+
+        JLabel title = new JLabel(MAIN_TITLE);
+        title.setFont(AppFonts.TITLE);
+        title.setForeground(Color.WHITE);
+
+        YearSpinner yearSpinner = new YearSpinner();
+        yearSpinner.addChangeListener(e-> {
+            currentYear = yearSpinner.getYear();
+            rebuildGrid(currentYear);
+        });
+
+        titlePanel.add(title);
+        titlePanel.add(yearSpinner);
+        return titlePanel;
     }
 
     private JScrollPane buildGrid(){
@@ -77,12 +98,7 @@ public class CalendarFrame extends JFrame {
         gridPanel.setBackground(AppColors.GRID_BG);
         gridPanel.setBorder(new EmptyBorder(12,14,4,14));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(1,1,1,1);
-
-        this.addDayNumbersRow(gridPanel, gbc);
-        this.addMonthRows(gridPanel, gbc);
+        buildGridContent(getCurrentYear());
 
         JScrollPane scroll = new JScrollPane(gridPanel);
         scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -90,7 +106,23 @@ public class CalendarFrame extends JFrame {
         return scroll;
     }
 
-    private void addDayNumbersRow(JPanel gridPanel, GridBagConstraints gbc){
+    private void buildGridContent(int year){
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(1,1,1,1);
+
+        this.addDayNumbersRow(gbc);
+        this.addMonthRows(gbc, year);
+    }
+
+    private void rebuildGrid(int year){
+        gridPanel.removeAll();
+        buildGridContent(year);
+        gridPanel.revalidate();
+        gridPanel.repaint();
+    }
+
+    private void addDayNumbersRow(GridBagConstraints gbc){
         //Headers row: day numbers
         gbc.gridy = 0;
         gbc.gridx = 0;
@@ -110,15 +142,15 @@ public class CalendarFrame extends JFrame {
         }
     }
 
-    private void addMonthRows(JPanel gridPanel, GridBagConstraints gbc){
+    private void addMonthRows(GridBagConstraints gbc, int year){
 
         Locale locale = CalendarFrame.LOCALE == null || CalendarFrame.LOCALE.isBlank() ? Locale.getDefault() : Locale.of(CalendarFrame.LOCALE);
-        for(int m = 0; m < 12; m++){
-            gbc.gridy = m + 1;
+        for(int m = 1; m <= 12; m++){
+            gbc.gridy = m ;
             gbc.gridx = 0;
             gbc.weightx = 0;
 
-            JLabel monthLbl = new JLabel(Month.of(m+1).getDisplayName(TextStyle.FULL_STANDALONE, locale));
+            JLabel monthLbl = new JLabel(Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE, locale));
             monthLbl.setFont(AppFonts.HEADERS);
             monthLbl.setForeground(AppColors.GRID_FG);
             monthLbl.setBorder(new EmptyBorder(0,0,0,0));
@@ -128,10 +160,13 @@ public class CalendarFrame extends JFrame {
             for(int d = 1; d <= 31; d++){
                 gbc.gridx = d;
                 gbc.weightx = 1.0;
-                if(d <= DAYS_IN_MONTH[m]){
-                    DayCell cell = new DayCell(this, m, d, LOCALE);
-                    cells[m][d-1] = cell;
+                try{
+                    LocalDate selectedDate = LocalDate.of(year, m, d);
+                    DayCell cell = new DayCell(this, selectedDate, LOCALE);
                     gridPanel.add(cell, gbc);
+
+                }catch(DateTimeException e) {
+                    //Day doesn't exist in this month (e.g. Feb 30), skip it
                 }
             }
         }
