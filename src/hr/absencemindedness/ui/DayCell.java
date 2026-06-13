@@ -2,42 +2,43 @@ package hr.absencemindedness.ui;
 
 import hr.absencemindedness.constants.AppColors;
 import hr.absencemindedness.enums.DayStatus;
+import hr.absencemindedness.models.CalendarKey;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Locale;
-import java.util.Map;
 
 public class DayCell  extends JPanel {
 
+    private final int year;
     private final int month;
     private final int day;
     private boolean hovered = false;
     private final CalendarFrame frame;
 
-    public DayCell(CalendarFrame frame, int month, int day, String lang){
+    public DayCell(CalendarFrame frame, LocalDate selectedDate, String lang){
         Locale locale = lang == null || lang.isBlank() ? Locale.getDefault() : Locale.of(lang);
-        this.month = month;
-        this.day = day;
+        this.month = selectedDate.getMonthValue();
+        this.day = selectedDate.getDayOfMonth();
+        this.year = selectedDate.getYear();
         this.frame = frame;
         setPreferredSize(new Dimension(22,26));
         setOpaque(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        setToolTipText(MonthDay.of(month + 1, day).format(DateTimeFormatter.ofPattern("d. MMMM",locale)));
+        setToolTipText(MonthDay.of(month, day).format(DateTimeFormatter.ofPattern("d. MMMM",locale)));
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-                Map<Integer, DayStatus> monthData = frame.getCalendarData().get(month);
                 if(frame.getSelectedStatus() == DayStatus.NONE){
-                    monthData.remove(day);
+                    frame.getCalendarData().remove(new CalendarKey(year, month, day));
                 } else {
-                    monthData.put(day, frame.getSelectedStatus());
+                    frame.getCalendarData().put(new CalendarKey(year, month, day), frame.getSelectedStatus());
                 }
                 repaint();
             }
@@ -77,8 +78,7 @@ public class DayCell  extends JPanel {
     }
 
     private DayStatus getStatus() {
-       return frame.getCalendarData().getOrDefault(month, Collections.emptyMap())
-                .getOrDefault(day, DayStatus.NONE);
+       return frame.getCalendarData().getOrDefault(new CalendarKey(year, month, day), DayStatus.NONE);
     }
 
 }
