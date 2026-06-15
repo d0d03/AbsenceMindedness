@@ -4,17 +4,17 @@ import hr.absencemindedness.constants.AppColors;
 import hr.absencemindedness.constants.AppFonts;
 import hr.absencemindedness.enums.DayStatus;
 import hr.absencemindedness.models.CalendarKey;
+import hr.absencemindedness.repositories.CalendarRepository;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.Year;
 import java.time.format.TextStyle;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class CalendarFrame extends JFrame {
     private static final String LOCALE = null;
 
     private final JPanel gridPanel = new JPanel();
-    private final Map<CalendarKey, DayStatus> calendarData = new HashMap<>();
+    private final Map<CalendarKey, DayStatus> calendarData = CalendarRepository.loadAll();
 
     private DayStatus selectedStatus = DayStatus.PLANED;
     private JLabel statusLabel;
@@ -44,6 +44,9 @@ public class CalendarFrame extends JFrame {
         setMinimumSize(new Dimension(900, 480));
         setLocationRelativeTo(null);
         setVisible(true);
+
+        addWindowListener(new AppWindowListener());
+
     }
 
     protected DayStatus getSelectedStatus(){
@@ -160,13 +163,11 @@ public class CalendarFrame extends JFrame {
             for(int d = 1; d <= 31; d++){
                 gbc.gridx = d;
                 gbc.weightx = 1.0;
-                try{
-                    LocalDate selectedDate = LocalDate.of(year, m, d);
-                    DayCell cell = new DayCell(this, selectedDate, LOCALE);
-                    gridPanel.add(cell, gbc);
 
-                }catch(DateTimeException e) {
-                    //Day doesn't exist in this month (e.g. Feb 30), skip it
+                int daysInMonth = Month.of(m).length(Year.isLeap(year));
+                if(d <= daysInMonth) {
+                    DayCell cell = new DayCell(this, new CalendarKey(year, m, d), LOCALE);
+                    gridPanel.add(cell, gbc);
                 }
             }
         }
