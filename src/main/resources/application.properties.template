@@ -1,0 +1,9 @@
+#db
+db.url=jdbc:h2:./absencemindedness;TRACE_LEVEL_FILE=0;AUTO_SERVER=FALSE;CIPHER=AES
+db.user=sa
+db.file.password=
+db.user.password=
+
+#application
+app.locale=
+app.enforce.password=false
