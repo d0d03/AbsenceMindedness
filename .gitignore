@@ -13,3 +13,7 @@ out/
 *.log
 hs_err_pid*
 replay_pid*
+
+#H2 database files
+*.mv.db
+*.trace.db
