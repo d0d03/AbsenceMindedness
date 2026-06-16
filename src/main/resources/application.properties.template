@@ -6,4 +6,3 @@ db.user.password=
 
 #application
 app.locale=
-app.enforce.password=false
