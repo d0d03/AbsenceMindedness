@@ -19,15 +19,14 @@ public class DayCell  extends JPanel {
     private final boolean isNonWorking;
     private boolean hovered = false;
 
-    public DayCell(CalendarFrame frame, CalendarKey key, String lang){
-        Locale locale = lang == null || lang.isBlank() ? Locale.getDefault() : Locale.of(lang);
+    public DayCell(CalendarFrame frame, CalendarKey key){
         this.key = key;
         this.frame = frame;
         this.isNonWorking = key.isWeekend();
         setPreferredSize(new Dimension(22,26));
         setOpaque(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        setToolTipText(key.format(DateTimeFormatter.ofPattern("d. MMMM",locale)));
+        setToolTipText(key.format(DateTimeFormatter.ofPattern("d. MMMM",Locale.getDefault())));
         
         if(!isNonWorking){
             addMouseListener(new MouseAdapter() {

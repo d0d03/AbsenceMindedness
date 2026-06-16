@@ -13,6 +13,7 @@ out/
 *.log
 hs_err_pid*
 replay_pid*
+src/main/resources/application.properties
 
 #H2 database files
 *.mv.db

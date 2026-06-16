@@ -1,14 +1,20 @@
 package hr.absencemindedness;
 
+import hr.absencemindedness.config.AppConfig;
 import hr.absencemindedness.repositories.DatabaseManager;
 import hr.absencemindedness.ui.CalendarFrame;
 
 import javax.swing.*;
 import java.sql.SQLException;
+import java.util.Locale;
 
 public class AbsenceMindednessApplication {
 
+    private static final String LOCALE = AppConfig.get("app.locale");
+
     public static void main(String[] args){
+
+        Locale.setDefault(Locale.of(LOCALE));
 
         try {
             DatabaseManager.initialize();
