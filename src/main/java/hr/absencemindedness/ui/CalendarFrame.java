@@ -21,7 +21,7 @@ import java.util.Map;
 public class CalendarFrame extends JFrame {
 
     private static final String MAIN_TITLE = "AbsenceMindedness";
-    private static final String LOCALE = null;
+    private static final String ACTIVE_TOOL = "Active tool: ";
 
     private final JPanel gridPanel = new JPanel();
     private final Map<CalendarKey, DayStatus> calendarData = CalendarRepository.loadAll();
@@ -68,7 +68,7 @@ public class CalendarFrame extends JFrame {
 
         JPanel titlePanel = buildTitlePanel();
 
-        statusLabel = new JLabel("Active tool: " + selectedStatus.getLabel());
+        statusLabel = new JLabel(String.format(ACTIVE_TOOL) + selectedStatus.getLabel());
         statusLabel.setFont(AppFonts.BODY);
         statusLabel.setForeground(AppColors.HEADER_FG);
 
@@ -147,13 +147,12 @@ public class CalendarFrame extends JFrame {
 
     private void addMonthRows(GridBagConstraints gbc, int year){
 
-        Locale locale = CalendarFrame.LOCALE == null || CalendarFrame.LOCALE.isBlank() ? Locale.getDefault() : Locale.of(CalendarFrame.LOCALE);
         for(int m = 1; m <= 12; m++){
             gbc.gridy = m ;
             gbc.gridx = 0;
             gbc.weightx = 0;
 
-            JLabel monthLbl = new JLabel(Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE, locale));
+            JLabel monthLbl = new JLabel(Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()));
             monthLbl.setFont(AppFonts.HEADERS);
             monthLbl.setForeground(AppColors.GRID_FG);
             monthLbl.setBorder(new EmptyBorder(0,0,0,0));
@@ -166,7 +165,7 @@ public class CalendarFrame extends JFrame {
 
                 int daysInMonth = Month.of(m).length(Year.isLeap(year));
                 if(d <= daysInMonth) {
-                    DayCell cell = new DayCell(this, new CalendarKey(year, m, d), LOCALE);
+                    DayCell cell = new DayCell(this, new CalendarKey(year, m, d));
                     gridPanel.add(cell, gbc);
                 }
             }
@@ -197,7 +196,7 @@ public class CalendarFrame extends JFrame {
             btn.setSelected(status==selectedStatus);
             btn.addActionListener(e -> {
                 selectedStatus = status;
-                statusLabel.setText("Active tool: " + status.getLabel());
+                statusLabel.setText(ACTIVE_TOOL + status.getLabel());
             });
         }
         outer.add(legend, BorderLayout.CENTER);

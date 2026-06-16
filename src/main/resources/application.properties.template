@@ -5,4 +5,4 @@ db.file.password=
 db.user.password=
 
 #application
-app.locale=
+app.locale=hr
