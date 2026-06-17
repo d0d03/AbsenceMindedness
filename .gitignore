@@ -3,11 +3,11 @@
 *.iml
 *.iws
 
-#Compiled output
+# Compiled output
 target/
 out/
 
-#Java
+# Java
 *.class
 *.jar
 *.log
@@ -15,6 +15,14 @@ hs_err_pid*
 replay_pid*
 src/main/resources/application.properties
 
-#H2 database files
+# H2 database files
 *.mv.db
 *.trace.db
+
+# Build output
+dist/
+
+# Inno setup output
+Output/
+# Inno Setup backup files
+*.iss.bak
