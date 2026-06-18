@@ -21,13 +21,11 @@ import java.util.Map;
 public class CalendarFrame extends JFrame {
 
     private static final String MAIN_TITLE = "AbsenceMindedness";
-    private static final String ACTIVE_TOOL = "Active tool: ";
 
     private final JPanel gridPanel = new JPanel();
     private final Map<CalendarKey, DayStatus> calendarData = CalendarRepository.loadAll();
 
     private DayStatus selectedStatus = DayStatus.PLANED;
-    private JLabel statusLabel;
     private int currentYear = LocalDate.now().getYear();
 
     public CalendarFrame(){
@@ -36,9 +34,14 @@ public class CalendarFrame extends JFrame {
         setLayout(new BorderLayout(0,0));
         getContentPane().setBackground(AppColors.GRID_BG);
 
-        add(buildHeader(), BorderLayout.NORTH);
+        HeaderPanel header =  new HeaderPanel(MAIN_TITLE, selectedStatus, year -> {
+            currentYear = year;
+            rebuildGrid(currentYear);
+        });
+        add(header, BorderLayout.NORTH);
+
         add(buildGrid(), BorderLayout.CENTER);
-        add(buildLegend(), BorderLayout.SOUTH);
+        add(buildLegend(header), BorderLayout.SOUTH);
 
         pack();
         setMinimumSize(new Dimension(900, 480));
@@ -59,41 +62,6 @@ public class CalendarFrame extends JFrame {
 
     protected int getCurrentYear(){
        return currentYear;
-    }
-
-    private JPanel buildHeader(){
-        JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(AppColors.HEADER_BG);
-        header.setBorder(new EmptyBorder(12,18,12,18));
-
-        JPanel titlePanel = buildTitlePanel();
-
-        statusLabel = new JLabel(String.format(ACTIVE_TOOL) + selectedStatus.getLabel());
-        statusLabel.setFont(AppFonts.BODY);
-        statusLabel.setForeground(AppColors.HEADER_FG);
-
-        header.add(titlePanel, BorderLayout.WEST);
-        header.add(statusLabel, BorderLayout.EAST);
-        return header;
-    }
-
-    private JPanel buildTitlePanel() {
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,0));
-        titlePanel.setOpaque(false);
-
-        JLabel title = new JLabel(MAIN_TITLE);
-        title.setFont(AppFonts.TITLE);
-        title.setForeground(Color.WHITE);
-
-        YearSpinner yearSpinner = new YearSpinner();
-        yearSpinner.addChangeListener(e-> {
-            currentYear = yearSpinner.getYear();
-            rebuildGrid(currentYear);
-        });
-
-        titlePanel.add(title);
-        titlePanel.add(yearSpinner);
-        return titlePanel;
     }
 
     private JScrollPane buildGrid(){
@@ -172,7 +140,7 @@ public class CalendarFrame extends JFrame {
         }
     }
 
-    private JPanel buildLegend(){
+    private JPanel buildLegend(HeaderPanel header){
         JPanel outer = new JPanel(new BorderLayout());
         outer.setBackground(AppColors.FOOTER_BG);
         outer.setBorder(new CompoundBorder(
@@ -196,7 +164,7 @@ public class CalendarFrame extends JFrame {
             btn.setSelected(status==selectedStatus);
             btn.addActionListener(e -> {
                 selectedStatus = status;
-                statusLabel.setText(ACTIVE_TOOL + status.getLabel());
+               header.updateStatusLabel(selectedStatus.getLabel());
             });
         }
         outer.add(legend, BorderLayout.CENTER);
