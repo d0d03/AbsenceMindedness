@@ -28,7 +28,7 @@ public class LegendPanel extends JPanel {
 
         ButtonGroup bg = new ButtonGroup();
         for(DayStatus status : DayStatus.values()){
-            JToggleButton btn = createLegendButton(status);
+            JToggleButton btn = new LegendButton(status);
             bg.add(btn);
             legend.add(btn);
             btn.setSelected(status==initialStatus);
@@ -43,61 +43,5 @@ public class LegendPanel extends JPanel {
         legendTitle.setFont(AppFonts.HEADERS);
         legendTitle.setForeground(AppColors.GRID_FG);
         return legendTitle;
-    }
-
-    private JToggleButton createLegendButton(DayStatus status){
-        JToggleButton btn = new JToggleButton((status.getLabel())){
-            @Override
-            protected void paintComponent(Graphics g){
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                if(isSelected()){
-                    g2.setColor(AppColors.GRID_FG);
-                    this.setForeground(AppColors.WHITE);
-                }else if(getModel().isRollover()){
-                    g2.setColor(AppColors.ICON_HVR);
-                    setForeground(AppColors.HEADER_BG);
-                }else{
-                    g2.setColor(AppColors.FOOTER_BG);
-                    this.setForeground(AppColors.GRID_FG);
-                }
-                g2.fillRoundRect(0,0,getWidth(), getHeight(), 8,8);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
-
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setFont(AppFonts.CELL);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setMargin(new Insets(4,8,4,8));
-
-        //Color switch
-        Icon icon = new Icon() {
-            @Override
-            public void paintIcon(Component c, Graphics g, int x, int y) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(status.getColor());
-                g2.fillRoundRect(x, y + 1, 12,12,4,4);
-                g2.setColor(AppColors.ICON_BRD);
-                g2.drawRoundRect(x, y+1, 12,12,4,4);
-                g2.dispose();
-            }
-
-            @Override
-            public int getIconWidth() {
-                return 14;
-            }
-
-            @Override
-            public int getIconHeight() {
-                return 14;
-            }
-        };
-        btn.setIcon(icon);
-        return btn;
     }
 }
