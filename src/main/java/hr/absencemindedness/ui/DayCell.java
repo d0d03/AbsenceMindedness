@@ -10,18 +10,22 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 public class DayCell  extends JPanel {
 
     private final CalendarKey key;
-    private final CalendarFrame frame;
     private final boolean isNonWorking;
     private boolean hovered = false;
+    private final Map<CalendarKey, DayStatus> calendarData;
 
-    public DayCell(CalendarFrame frame, CalendarKey key){
+    public DayCell(Supplier<DayStatus> statusSupplier, Map<CalendarKey, DayStatus> calendarData, CalendarKey key){
         this.key = key;
-        this.frame = frame;
+        this.calendarData = calendarData;
         this.isNonWorking = key.isWeekend();
         setPreferredSize(new Dimension(22,26));
         setOpaque(false);
@@ -33,13 +37,13 @@ public class DayCell  extends JPanel {
                 @Override
                 public void mouseClicked(MouseEvent e){
 
-                    if(frame.getSelectedStatus() == DayStatus.NONE){
+                    if(statusSupplier.get() == DayStatus.NONE){
                         if(CalendarRepository.deleteEntry(key)){
-                            frame.getCalendarData().remove(key);
+                            calendarData.remove(key);
                         }
                     } else {
-                        if(CalendarRepository.saveEntry(key, frame.getSelectedStatus())){
-                            frame.getCalendarData().put(key, frame.getSelectedStatus());
+                        if(CalendarRepository.saveEntry(key, statusSupplier.get())){
+                            calendarData.put(key, statusSupplier.get());
                         }
                     }
                     repaint();
@@ -60,11 +64,12 @@ public class DayCell  extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        DayStatus status  = getStatus();
-        Color base = status == DayStatus.NONE ? AppColors.WHITE : status.getColor();
-
+        Color base;
         if(isNonWorking){
             base = DayStatus.NON_WORKING.getColor();
+        }else{
+            DayStatus status  = getStatus();
+            base = status == DayStatus.NONE ? AppColors.WHITE : status.getColor();
         }
 
         //Fill
@@ -85,7 +90,7 @@ public class DayCell  extends JPanel {
     }
 
     private DayStatus getStatus() {
-       return frame.getCalendarData().getOrDefault(key, DayStatus.NONE);
+       return calendarData.getOrDefault(key, DayStatus.NONE);
     }
 
 }
