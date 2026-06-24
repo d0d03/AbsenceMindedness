@@ -1,5 +1,6 @@
 package hr.absencemindedness.ui;
 
+import hr.absencemindedness.config.AppConfig;
 import hr.absencemindedness.constants.AppColors;
 import hr.absencemindedness.constants.AppFonts;
 import hr.absencemindedness.enums.DayStatus;
@@ -35,6 +36,7 @@ public class HeaderPanel extends JPanel {
         JLabel title = new JLabel(mainTitle);
         title.setFont(AppFonts.TITLE);
         title.setForeground(Color.WHITE);
+        title.setToolTipText("v" + AppConfig.get("app.version", "dev"));
 
         YearSpinner yearSpinner = new YearSpinner();
         yearSpinner.addChangeListener( e -> onYearChange.accept(yearSpinner.getYear()));
