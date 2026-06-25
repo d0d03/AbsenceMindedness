@@ -5,4 +5,5 @@ db.file.password=
 db.user.password=
 
 #application
+app.version=${project.version}
 app.locale=hr
