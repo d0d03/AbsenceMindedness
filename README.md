@@ -24,9 +24,17 @@ Steps:
 4. Run `AbsenceMindednessApplication.java`
 
 ## Building the Installer
-1. Run `package.bat` to produce the app image
-2. Open `installer.iss` in Inno Setup and press `Ctrl+F9` to compile
-3. Find the installer in `Output/`
+1. Make sure [Inno Setup 6](https://jrsoftware.org/isinfo.php) is installed
+2. Either:
+   - Add the Inno Setup install folder to your system `PATH` (so `ISCC` is available globally), then run:
+   ```cmd
+   package.bat
+   ```
+   - Or pass the full path to `ISCC.exe` explicitly:
+   ```cmd
+   package.bat "<path_to_install_folder\ISCC.exe"
+   - ```
+3. The installer will be built automatically and placed in `Output/`
 
 ## Tech Stack
 - Java 21
