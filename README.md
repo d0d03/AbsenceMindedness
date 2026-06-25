@@ -33,7 +33,7 @@ Steps:
    - Or pass the full path to `ISCC.exe` explicitly:
    ```cmd
    package.bat "<path_to_install_folder\ISCC.exe"
-   - ```
+   ```
 3. The installer will be built automatically and placed in `Output/`
 
 ## Tech Stack
@@ -42,6 +42,6 @@ Steps:
 - H2 Database
 - Maven
 - Inno Setup
-- 
+
 ## License
 This project is licensed under the GNU General Public License v3.0 — see the [LICENSE](LICENSE) file for details.
