@@ -37,6 +37,17 @@ public final class DatabaseManager {
                     PRIMARY KEY ("year", "month","day")
                 )
                 """);
+            stmt.execute("""
+                CREATE TABLE IF NOT EXISTS holidays(
+                    "country_code" VARCHAR(2),
+                    "year" INT,
+                    "month" INT,
+                    "day" INT,
+                    "local_name" VARCHAR(255),
+                    "name" VARCHAR(255),
+                    PRIMARY KEY ("country_code", "year", "month", "day")
+                )
+                """);
         }
     }
 
