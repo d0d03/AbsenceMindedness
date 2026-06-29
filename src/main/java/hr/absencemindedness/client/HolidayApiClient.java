@@ -38,7 +38,7 @@ public final class HolidayApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if(response.statusCode() != 200){
-            throw new IOException("Failed to fetch holidays: HTTP " + response.statusCode());
+            throw new IOException("Failed to fetch holidays: HTTP " + response.statusCode() + " " + response.body());
         }
 
         Type listType  = new TypeToken<List<Holiday>>(){}.getType();

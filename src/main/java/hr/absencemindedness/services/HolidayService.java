@@ -6,6 +6,7 @@ import hr.absencemindedness.repositories.HolidayRepository;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -25,18 +26,24 @@ public final class HolidayService {
 
         new SwingWorker<List<Holiday>, Void>(){
             @Override
-            protected List<Holiday> doInBackground() throws IOException, InterruptedException{
-                IOException lastIOError = null;
+            protected List<Holiday> doInBackground() throws Exception{
+                List<Throwable> suppressedErrors = new ArrayList<>();
                 for(int attempt = 0; attempt < MAX_RETRY_ATTEMPTS; attempt++){
                     try {
                         List<Holiday> holidays = HolidayApiClient.fetchHolidays(year, countryCode);
                         HolidayRepository.saveAll(holidays, countryCode);
                         return holidays;
                     } catch (IOException e) {
-                        lastIOError = e;
+                        suppressedErrors.add(e);
+
+                        System.err.printf("[HolidayService] Attempt %d/%d failed. Cause: %s%n", (attempt + 1), MAX_RETRY_ATTEMPTS, e.getMessage());
+
+                        Thread.sleep(500L * (attempt + 1));
                     }
                 }
-                throw lastIOError;
+                IOException finalException = new IOException("Failed to fetch holidays after " + MAX_RETRY_ATTEMPTS + " attempts");
+                suppressedErrors.forEach(finalException::addSuppressed);
+                throw finalException;
             }
 
             @Override
@@ -47,7 +54,7 @@ public final class HolidayService {
                     Thread.currentThread().interrupt();
                     onLoaded.accept(List.of());
                 } catch (ExecutionException e){
-                    System.err.println("Failed to fetch holidays: " + e.getCause().getMessage());
+                    System.err.println(e.getMessage());
                     onLoaded.accept(List.of());
                 }
             }
