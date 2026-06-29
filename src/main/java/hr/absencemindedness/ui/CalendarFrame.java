@@ -58,8 +58,11 @@ public class CalendarFrame extends JFrame {
 
     private void loadHolidaysForYear(int year){
         String countryCode = AppConfig.get("app.locale", "HR");
-        HolidayService.loadHolidays(year, countryCode.toUpperCase(), list -> holidays = list.stream().collect(Collectors.toMap(Holiday::date, h-> h)));
-        grid.rebuildGrid(currentYear);
+        HolidayService.loadHolidays(year, countryCode.toUpperCase(), list -> {
+            holidays = list.stream().collect(Collectors.toMap(Holiday::date, h-> h));
+            grid.rebuildGrid(currentYear);
+        });
+
     }
 
 }
