@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CalendarRepository {
+public final class CalendarRepository {
 
     private CalendarRepository(){
         throw new IllegalStateException("Utility class");

@@ -3,12 +3,14 @@ package hr.absencemindedness.ui;
 import hr.absencemindedness.constants.AppColors;
 import hr.absencemindedness.enums.DayStatus;
 import hr.absencemindedness.models.CalendarKey;
+import hr.absencemindedness.models.Holiday;
 import hr.absencemindedness.repositories.CalendarRepository;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Locale;
@@ -23,14 +25,16 @@ public class DayCell  extends JPanel {
     private boolean hovered = false;
     private final Map<CalendarKey, DayStatus> calendarData;
 
-    public DayCell(Supplier<DayStatus> statusSupplier, Map<CalendarKey, DayStatus> calendarData, CalendarKey key){
+    public DayCell(Supplier<DayStatus> statusSupplier, Supplier<Map<LocalDate, Holiday>> holidaySupplier, Map<CalendarKey, DayStatus> calendarData, CalendarKey key){
         this.key = key;
         this.calendarData = calendarData;
-        this.isNonWorking = key.isWeekend();
+        Holiday holiday = holidaySupplier.get().get(key.toLocalDate());
+        boolean isHoliday = holiday != null;
+        this.isNonWorking = key.isWeekend() || isHoliday;
         setPreferredSize(new Dimension(22,26));
         setOpaque(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        setToolTipText(key.format(DateTimeFormatter.ofPattern("d. MMMM",Locale.getDefault())));
+        setToolTipText(key.format(DateTimeFormatter.ofPattern("E d. MMMM",Locale.getDefault())) + (isHoliday ? " - " + holiday.localName() : ""));
         
         if(!isNonWorking){
             addMouseListener(new MouseAdapter() {

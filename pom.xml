@@ -7,7 +7,7 @@
 
     <groupId>hr.absencemindedness</groupId>
     <artifactId>absencemindedness</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -15,6 +15,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.h2>2.2.224</version.h2>
+        <version.gson>2.14.0</version.gson>
     </properties>
 
     <dependencies>
@@ -22,6 +23,11 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${version.h2}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${version.gson}</version>
         </dependency>
     </dependencies>
 
@@ -37,7 +43,7 @@
                 </includes>
             </resource>
             <!--Disable filtering on everything else to avoid attempts to filter binary files (e.g. .ico, .png...)
-                exlude application.properties as well so they aren't copied for the second time
+                exclude application.properties as well so they aren't copied for the second time
             -->
             <resource>
                 <directory>src/main/resources</directory>
