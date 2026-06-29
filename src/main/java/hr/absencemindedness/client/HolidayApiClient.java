@@ -1,6 +1,8 @@
 package hr.absencemindedness.client;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.reflect.TypeToken;
 import hr.absencemindedness.models.Holiday;
 
@@ -10,13 +12,17 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.List;
 
 public final class HolidayApiClient {
 
     private static final String BASE_URL = "https://date.nager.at/api/v3/PublicHolidays";
     private static final HttpClient client = HttpClient.newHttpClient();
-    private static final Gson gson = new Gson();
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, type, context) ->
+                    LocalDate.parse(json.getAsString()))
+            .create();
 
     private HolidayApiClient(){
         throw new IllegalStateException("Utility class");
