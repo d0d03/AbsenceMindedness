@@ -3,9 +3,8 @@ package hr.absencemindedness.ui;
 import hr.absencemindedness.config.AppConfig;
 import hr.absencemindedness.constants.AppColors;
 import hr.absencemindedness.enums.DayStatus;
-import hr.absencemindedness.models.CalendarKey;
 import hr.absencemindedness.models.Holiday;
-import hr.absencemindedness.repositories.CalendarRepository;
+import hr.absencemindedness.services.CalendarService;
 import hr.absencemindedness.services.HolidayService;
 
 import javax.swing.*;
@@ -17,10 +16,9 @@ import java.util.stream.Collectors;
 public class CalendarFrame extends JFrame {
 
     private static final String MAIN_TITLE = "AbsenceMindedness";
-    private final Map<CalendarKey, DayStatus> calendarData = CalendarRepository.loadAll();
     private final CalendarGridPanel grid;
+    private final CalendarService calendarService = new CalendarService();
     private Map<LocalDate, Holiday> holidays = Map.of();
-
     private DayStatus selectedStatus = DayStatus.PLANED;
     private int currentYear = LocalDate.now().getYear();
 
@@ -30,7 +28,7 @@ public class CalendarFrame extends JFrame {
         setLayout(new BorderLayout(0,0));
         getContentPane().setBackground(AppColors.GRID_BG);
 
-        grid = new CalendarGridPanel(() -> currentYear, () -> selectedStatus, () -> holidays, calendarData);
+        grid = new CalendarGridPanel(() -> currentYear, () -> selectedStatus, () -> holidays, calendarService);
         loadHolidaysForYear(currentYear);
 
         HeaderPanel header =  new HeaderPanel(MAIN_TITLE, selectedStatus, year -> {
