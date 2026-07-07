@@ -41,8 +41,11 @@ public class CalendarFrame extends JFrame {
             header.updateStatusLabel(selectedStatus.getLabel());
         });
 
+        StatsPanel stats = new StatsPanel(calendarService, () -> currentYear);
+
         add(header, BorderLayout.NORTH);
         add(grid, BorderLayout.CENTER);
+        add(stats, BorderLayout.EAST);
         add(legend, BorderLayout.SOUTH);
 
         pack();
