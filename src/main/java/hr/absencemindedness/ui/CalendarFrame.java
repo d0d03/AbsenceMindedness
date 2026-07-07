@@ -49,7 +49,7 @@ public class CalendarFrame extends JFrame {
         add(legend, BorderLayout.SOUTH);
 
         pack();
-        setMinimumSize(new Dimension(900, 480));
+        setMinimumSize(new Dimension(1480, 480));
         setLocationRelativeTo(null);
         setVisible(true);
 
