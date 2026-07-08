@@ -5,6 +5,7 @@ import hr.absencemindedness.constants.AppFonts;
 import hr.absencemindedness.enums.DayStatus;
 import hr.absencemindedness.models.CalendarKey;
 import hr.absencemindedness.models.Holiday;
+import hr.absencemindedness.services.CalendarService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -24,16 +25,16 @@ public class CalendarGridPanel extends JPanel {
     private final IntSupplier yearSupplier;
     private final Supplier<DayStatus> statusSupplier;
     private final Supplier<Map<LocalDate, Holiday>> holidaySupplier;
-    private final Map<CalendarKey, DayStatus> calendarData;
+    private final CalendarService calendarService;
 
-    public CalendarGridPanel(IntSupplier yearSupplier, Supplier<DayStatus> statusSupplier, Supplier<Map<LocalDate, Holiday>> holidaysSupplier, Map<CalendarKey, DayStatus> calendarData){
+    public CalendarGridPanel(IntSupplier yearSupplier, Supplier<DayStatus> statusSupplier, Supplier<Map<LocalDate, Holiday>> holidaysSupplier, CalendarService calendarService){
         super(new BorderLayout());
         setBackground(AppColors.GRID_BG);
 
         this.yearSupplier = yearSupplier;
         this.statusSupplier = statusSupplier;
         this.holidaySupplier = holidaysSupplier;
-        this.calendarData = calendarData;
+        this.calendarService = calendarService;
 
         gridPanel = new JPanel(new GridBagLayout());
         gridPanel.setBackground(AppColors.GRID_BG);
@@ -103,7 +104,7 @@ public class CalendarGridPanel extends JPanel {
                 gbc.weightx = 1.0;
 
                 if(d <= daysInMonth) {
-                    DayCell cell = new DayCell(statusSupplier, holidaySupplier, calendarData, new CalendarKey(year, m, d));
+                    DayCell cell = new DayCell(statusSupplier, holidaySupplier, calendarService, new CalendarKey(year, m, d));
                     gridPanel.add(cell, gbc);
                 }
             }

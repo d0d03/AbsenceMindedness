@@ -4,7 +4,7 @@ import hr.absencemindedness.constants.AppColors;
 import hr.absencemindedness.enums.DayStatus;
 import hr.absencemindedness.models.CalendarKey;
 import hr.absencemindedness.models.Holiday;
-import hr.absencemindedness.repositories.CalendarRepository;
+import hr.absencemindedness.services.CalendarService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,10 +12,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 public class DayCell  extends JPanel {
@@ -23,11 +21,11 @@ public class DayCell  extends JPanel {
     private final CalendarKey key;
     private final boolean isNonWorking;
     private boolean hovered = false;
-    private final Map<CalendarKey, DayStatus> calendarData;
+    private final CalendarService calendarService;
 
-    public DayCell(Supplier<DayStatus> statusSupplier, Supplier<Map<LocalDate, Holiday>> holidaySupplier, Map<CalendarKey, DayStatus> calendarData, CalendarKey key){
+    public DayCell(Supplier<DayStatus> statusSupplier, Supplier<Map<LocalDate, Holiday>> holidaySupplier, CalendarService calendarService, CalendarKey key){
         this.key = key;
-        this.calendarData = calendarData;
+        this.calendarService = calendarService;
         Holiday holiday = holidaySupplier.get().get(key.toLocalDate());
         boolean isHoliday = holiday != null;
         this.isNonWorking = key.isWeekend() || isHoliday;
@@ -42,13 +40,9 @@ public class DayCell  extends JPanel {
                 public void mouseClicked(MouseEvent e){
 
                     if(statusSupplier.get() == DayStatus.NONE){
-                        if(CalendarRepository.deleteEntry(key)){
-                            calendarData.remove(key);
-                        }
+                        calendarService.clearStatus(key);
                     } else {
-                        if(CalendarRepository.saveEntry(key, statusSupplier.get())){
-                            calendarData.put(key, statusSupplier.get());
-                        }
+                        calendarService.saveStatus(key, statusSupplier.get());
                     }
                     repaint();
                 }
@@ -72,7 +66,7 @@ public class DayCell  extends JPanel {
         if(isNonWorking){
             base = DayStatus.NON_WORKING.getColor();
         }else{
-            DayStatus status  = getStatus();
+            DayStatus status  = calendarService.getStatus(key);
             base = status == DayStatus.NONE ? AppColors.WHITE : status.getColor();
         }
 
@@ -92,9 +86,4 @@ public class DayCell  extends JPanel {
 
         g2.dispose();
     }
-
-    private DayStatus getStatus() {
-       return calendarData.getOrDefault(key, DayStatus.NONE);
-    }
-
 }
