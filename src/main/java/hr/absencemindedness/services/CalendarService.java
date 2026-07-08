@@ -6,7 +6,8 @@ import hr.absencemindedness.repositories.CalendarRepository;
 import hr.absencemindedness.state.CalendarStore;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class CalendarService {
 
@@ -17,18 +18,16 @@ public class CalendarService {
         this.calendarStore = new CalendarStore(CalendarRepository.loadAll());
     }
 
-    public Map<CalendarKey, DayStatus> loadAllCalendarEntries() {
-        return CalendarRepository.loadAll();
-    }
-
     public void saveStatus(CalendarKey key, DayStatus status){
-        if(!calendarStore.entries().contains(Map.entry(key,status)) && CalendarRepository.saveEntry(key, status)){
+        DayStatus current = calendarStore.get(key);
+        if ((current == DayStatus.NONE || current != status) && CalendarRepository.saveEntry(key, status)) {
             calendarStore.put(key, status);
         }
     }
 
     public void clearStatus(CalendarKey key){
-        if(!calendarStore.get(key).equals(DayStatus.NONE) && CalendarRepository.deleteEntry(key)){
+        DayStatus current = calendarStore.get(key);
+        if (current != DayStatus.NONE && CalendarRepository.deleteEntry(key)) {
             calendarStore.remove(key);
         }
     }
@@ -37,8 +36,8 @@ public class CalendarService {
        return calendarStore.get(key);
     }
 
-    public Set<Map.Entry<CalendarKey, DayStatus>> allEntries() {
-        return calendarStore.entries();
+    public void forEachMatching(Predicate<Map.Entry<CalendarKey, DayStatus>> predicate, Consumer<Map.Entry<CalendarKey, DayStatus>> action){
+        calendarStore.forEachMatching(predicate, action);
     }
 
     public void addListener(Runnable listener){

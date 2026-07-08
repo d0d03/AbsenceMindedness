@@ -4,6 +4,8 @@ import hr.absencemindedness.enums.DayStatus;
 import hr.absencemindedness.models.CalendarKey;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class CalendarStore {
 
@@ -29,8 +31,12 @@ public class CalendarStore {
         return calendarData.getOrDefault(key, DayStatus.NONE);
     }
 
-    public Set<Map.Entry<CalendarKey, DayStatus>> entries() {
-        return Set.copyOf(calendarData.entrySet());
+    public void forEachMatching(Predicate<Map.Entry<CalendarKey, DayStatus>> predicate, Consumer<Map.Entry<CalendarKey, DayStatus>> action){
+        for(Map.Entry<CalendarKey, DayStatus> e : calendarData.entrySet()){
+            if(predicate.test(e)){
+                action.accept(e);
+            }
+        }
     }
 
     public void addListener(Runnable listener){
