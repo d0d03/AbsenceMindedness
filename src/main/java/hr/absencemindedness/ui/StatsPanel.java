@@ -26,7 +26,7 @@ public class StatsPanel extends JPanel {
         add(card, new GridBagConstraints());
     }
 
-    private void rebuildStatsContent(){
+    public void rebuildStatsContent(){
         card.removeAll();
         buildStatsContent();
         card.revalidate();

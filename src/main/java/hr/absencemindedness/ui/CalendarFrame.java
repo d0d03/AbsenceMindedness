@@ -31,17 +31,18 @@ public class CalendarFrame extends JFrame {
         grid = new CalendarGridPanel(() -> currentYear, () -> selectedStatus, () -> holidays, calendarService);
         loadHolidaysForYear(currentYear);
 
+        StatsPanel stats = new StatsPanel(calendarService, () -> currentYear);
+
         HeaderPanel header =  new HeaderPanel(MAIN_TITLE, selectedStatus, year -> {
             currentYear = year;
             loadHolidaysForYear(currentYear);
+            stats.rebuildStatsContent();
         });
 
         LegendPanel legend = new LegendPanel(selectedStatus, status -> {
             selectedStatus = status;
             header.updateStatusLabel(selectedStatus.getLabel());
         });
-
-        StatsPanel stats = new StatsPanel(calendarService, () -> currentYear);
 
         add(header, BorderLayout.NORTH);
         add(grid, BorderLayout.CENTER);
